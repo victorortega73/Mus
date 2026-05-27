@@ -29,7 +29,7 @@ html, body {
     padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
 }
 
-/* === EQUIPOS (los dos marcadores grandes) === */
+/* === EQUIPOS === */
 .equipo {
     flex: 1;
     display: flex;
@@ -51,16 +51,31 @@ html, body {
     background: linear-gradient(225deg, #1e5f3f 0%, #0a3d2a 100%);
 }
 
-.equipo.activo {
-    background: #2d7a52;
-}
-
 .nombre-equipo {
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 700;
     letter-spacing: 3px;
-    opacity: 0.7;
+    opacity: 0.8;
     margin-bottom: 8px;
+    padding: 4px 10px;
+    border-radius: 8px;
+    border: 1px dashed transparent;
+    transition: border-color 0.2s, background 0.2s;
+    -webkit-user-select: text;
+    user-select: text;
+    outline: none;
+    min-width: 80px;
+    text-align: center;
+    cursor: text;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.nombre-equipo:focus {
+    border-color: rgba(255, 215, 0, 0.5);
+    background: rgba(0, 0, 0, 0.25);
 }
 
 .puntos {
@@ -79,14 +94,15 @@ html, body {
     letter-spacing: 1.5px;
 }
 
+/* === ZONA DE JUEGOS === */
 .juegos-zona {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     margin-top: 18px;
     background: rgba(0,0,0,0.3);
     padding: 4px 6px;
-    border-radius: 20px;
+    border-radius: 24px;
 }
 
 .btn-juego-menos, .btn-juego-mas {
@@ -114,30 +130,35 @@ html, body {
 }
 
 .juegos {
-    font-size: 13px;
-    opacity: 0.85;
-    padding: 0 4px;
-    white-space: nowrap;
+    font-size: 22px;
+    font-weight: 800;
+    color: #ffd700;
+    padding: 0 6px;
+    min-width: 26px;
+    text-align: center;
+    line-height: 1;
 }
 
 /* === ZONA CENTRAL === */
+/* Color burdeos oscuro / madera para contrastar bien con el verde */
 .centro {
     width: 38%;
     max-width: 280px;
     min-width: 200px;
-    background: #051f15;
+    background: linear-gradient(180deg, #2a1818 0%, #1a0f0f 100%);
     padding: 8px;
     display: flex;
     flex-direction: column;
     gap: 6px;
-    border-left: 2px solid rgba(255,255,255,0.1);
-    border-right: 2px solid rgba(255,255,255,0.1);
+    border-left: 2px solid rgba(0,0,0,0.4);
+    border-right: 2px solid rgba(0,0,0,0.4);
+    box-shadow: inset 0 0 30px rgba(0,0,0,0.3);
 }
 
 .btn-reset {
-    background: #5a1f1f;
-    color: white;
-    border: none;
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     padding: 6px;
     border-radius: 6px;
     font-size: 10px;
@@ -147,7 +168,7 @@ html, body {
 }
 
 .btn-reset:active {
-    background: #7a2f2f;
+    background: rgba(255, 255, 255, 0.15);
 }
 
 .apuestas {
@@ -159,20 +180,21 @@ html, body {
 }
 
 .apuesta {
-    background: #143d2a;
+    background: rgba(255, 255, 255, 0.06);
     border-radius: 8px;
     padding: 4px;
     display: grid;
     grid-template-columns: 1fr 2fr 1fr;
     align-items: center;
     gap: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .apuesta-btn {
     background: rgba(255,255,255,0.08);
-    color: white;
+    color: #ffd700;
     border: none;
-    padding: 8px 0;
+    padding: 10px 0;
     border-radius: 6px;
     font-size: 14px;
     font-weight: 700;
@@ -182,11 +204,12 @@ html, body {
 
 .apuesta-btn:active {
     transform: scale(0.92);
-    background: #2d7a52;
+    background: rgba(255, 215, 0, 0.25);
 }
 
 .apuesta-info {
     text-align: center;
+    padding: 4px 0;
 }
 
 .apuesta-label {
@@ -194,6 +217,7 @@ html, body {
     letter-spacing: 1px;
     opacity: 0.75;
     margin-bottom: 1px;
+    color: rgba(255, 255, 255, 0.85);
 }
 
 .apuesta-valor {
@@ -206,8 +230,9 @@ html, body {
 .ayuda {
     font-size: 8px;
     text-align: center;
-    opacity: 0.4;
+    opacity: 0.45;
     letter-spacing: 0.5px;
+    color: rgba(255, 255, 255, 0.8);
 }
 
 /* === MODAL === */
@@ -258,7 +283,7 @@ html, body {
     background: rgba(255,255,255,0.15);
 }
 
-/* En modo retrato (móvil de pie), avisar que gire */
+/* En modo retrato avisar que gire */
 @media (orientation: portrait) and (max-width: 600px) {
     .app::before {
         content: '📱 Gira el móvil en horizontal';

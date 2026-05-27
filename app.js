@@ -1,7 +1,7 @@
 // === ESTADO DE LA APLICACIÓN ===
 const estado = {
-    equipo1: { puntos: 0, juegos: 0 },
-    equipo2: { puntos: 0, juegos: 0 },
+    equipo1: { puntos: 0, juegos: 0, nombre: 'NOSOTROS' },
+    equipo2: { puntos: 0, juegos: 0, nombre: 'ELLOS' },
     apuestas: { grande: 0, chica: 0, pares: 0, juego: 0 }
 };
 
@@ -35,6 +35,16 @@ function actualizarPantalla() {
     document.getElementById('apuesta-chica').textContent = estado.apuestas.chica;
     document.getElementById('apuesta-pares').textContent = estado.apuestas.pares;
     document.getElementById('apuesta-juego').textContent = estado.apuestas.juego;
+    
+    // Solo actualizamos los nombres si no se están editando ahora mismo
+    const nombre1 = document.getElementById('nombre1');
+    const nombre2 = document.getElementById('nombre2');
+    if (document.activeElement !== nombre1) {
+        nombre1.textContent = estado.equipo1.nombre || 'NOSOTROS';
+    }
+    if (document.activeElement !== nombre2) {
+        nombre2.textContent = estado.equipo2.nombre || 'ELLOS';
+    }
     
     guardarEstado();
 }
@@ -245,7 +255,53 @@ function configurarBotonesJuego() {
     });
 }
 
-// === MODAL DE RESET ===
+// === NOMBRES EDITABLES ===
+function configurarNombresEditables() {
+    const nombre1 = document.getElementById('nombre1');
+    const nombre2 = document.getElementById('nombre2');
+    
+    function gestionarNombre(elemento, equipo, defecto) {
+        // Al tocar, seleccionar todo el texto para editarlo cómodo
+        elemento.addEventListener('focus', () => {
+            setTimeout(() => {
+                const range = document.createRange();
+                range.selectNodeContents(elemento);
+                const sel = window.getSelection();
+                sel.removeAllRanges();
+                sel.addRange(range);
+            }, 50);
+        });
+        
+        // Al perder el foco, guardar el nombre
+        elemento.addEventListener('blur', () => {
+            let texto = elemento.textContent.trim();
+            if (!texto) texto = defecto;
+            // Limitar a 15 caracteres
+            if (texto.length > 15) texto = texto.substring(0, 15);
+            estado[equipo].nombre = texto;
+            elemento.textContent = texto;
+            guardarEstado();
+        });
+        
+        // Al pulsar Enter, terminar edición
+        elemento.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                elemento.blur();
+            }
+        });
+        
+        // Evitar saltos de línea
+        elemento.addEventListener('input', () => {
+            if (elemento.textContent.includes('\n')) {
+                elemento.textContent = elemento.textContent.replace(/\n/g, '');
+            }
+        });
+    }
+    
+    gestionarNombre(nombre1, 'equipo1', 'NOSOTROS');
+    gestionarNombre(nombre2, 'equipo2', 'ELLOS');
+}
 function mostrarModalReset() {
     document.getElementById('modal-reset').classList.add('visible');
 }
@@ -263,8 +319,10 @@ function resetearPuntos() {
 }
 
 function resetearTodo() {
-    estado.equipo1 = { puntos: 0, juegos: 0 };
-    estado.equipo2 = { puntos: 0, juegos: 0 };
+    estado.equipo1.puntos = 0;
+    estado.equipo1.juegos = 0;
+    estado.equipo2.puntos = 0;
+    estado.equipo2.juegos = 0;
     estado.apuestas = { grande: 0, chica: 0, pares: 0, juego: 0 };
     actualizarPantalla();
     ocultarModalReset();
@@ -273,6 +331,7 @@ function resetearTodo() {
 // === INICIALIZAR ===
 document.addEventListener('DOMContentLoaded', () => {
     cargarEstado();
+    configurarNombresEditables();
     configurarEquipo('equipo1', 'equipo1');
     configurarEquipo('equipo2', 'equipo2');
     configurarApuestas();
