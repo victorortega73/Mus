@@ -16,6 +16,8 @@ html, body {
     background: #0a3d2a;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     color: white;
+    touch-action: manipulation;
+    -webkit-text-size-adjust: 100%;
 }
 
 /* === LAYOUT PRINCIPAL: HORIZONTAL === */

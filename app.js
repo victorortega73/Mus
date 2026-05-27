@@ -288,11 +288,33 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('reset-todo').addEventListener('click', resetearTodo);
     document.getElementById('reset-cancelar').addEventListener('click', ocultarModalReset);
     
-    // Evitar zoom por doble toque
+    // === BLOQUEAR ZOOM EN iOS (varios métodos combinados) ===
+    
+    // 1. Bloquear doble toque (lo que más molesta)
     let ultimoTap = 0;
     document.addEventListener('touchend', (e) => {
         const ahora = Date.now();
-        if (ahora - ultimoTap < 300) e.preventDefault();
+        if (ahora - ultimoTap < 350) {
+            e.preventDefault();
+        }
         ultimoTap = ahora;
-    });
+    }, { passive: false });
+    
+    // 2. Bloquear gesto de pellizco (pinch-to-zoom)
+    document.addEventListener('gesturestart', (e) => e.preventDefault());
+    document.addEventListener('gesturechange', (e) => e.preventDefault());
+    document.addEventListener('gestureend', (e) => e.preventDefault());
+    
+    // 3. Bloquear multi-touch (que es lo que detecta iOS para hacer zoom)
+    document.addEventListener('touchstart', (e) => {
+        if (e.touches.length > 1) {
+            e.preventDefault();
+        }
+    }, { passive: false });
+    
+    document.addEventListener('touchmove', (e) => {
+        if (e.touches.length > 1) {
+            e.preventDefault();
+        }
+    }, { passive: false });
 });

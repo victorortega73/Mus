@@ -1,5 +1,5 @@
 // Service Worker para que la app funcione offline
-const CACHE_NAME = 'mus-v3';
+const CACHE_NAME = 'mus-v4';
 const ARCHIVOS = [
     './',
     './index.html',
