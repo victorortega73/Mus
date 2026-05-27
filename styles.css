@@ -13,7 +13,7 @@ html, body {
     height: 100%;
     overflow: hidden;
     overscroll-behavior: none;
-    background: #0a3d2a;
+    background: #1e5f3f;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     color: white;
     touch-action: manipulation;
@@ -24,9 +24,14 @@ html, body {
 .app {
     height: 100vh;
     height: 100dvh;
+    width: 100vw;
     display: flex;
     flex-direction: row;
-    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
 }
 
 /* === EQUIPOS === */
@@ -36,7 +41,7 @@ html, body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 15px;
+    padding: 20px 15px;
     position: relative;
     touch-action: none;
     transition: background-color 0.15s;
