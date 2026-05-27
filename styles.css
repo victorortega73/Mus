@@ -140,19 +140,19 @@ html, body {
 }
 
 /* === ZONA CENTRAL === */
-/* Color burdeos oscuro / madera para contrastar bien con el verde */
+/* Verde más oscuro y profundo, estilo tapete de noche */
 .centro {
     width: 38%;
     max-width: 280px;
     min-width: 200px;
-    background: linear-gradient(180deg, #2a1818 0%, #1a0f0f 100%);
+    background: linear-gradient(180deg, #0d2e1f 0%, #051f14 100%);
     padding: 8px;
     display: flex;
     flex-direction: column;
     gap: 6px;
     border-left: 2px solid rgba(0,0,0,0.4);
     border-right: 2px solid rgba(0,0,0,0.4);
-    box-shadow: inset 0 0 30px rgba(0,0,0,0.3);
+    box-shadow: inset 0 0 30px rgba(0,0,0,0.4);
 }
 
 .btn-reset {
