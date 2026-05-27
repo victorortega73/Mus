@@ -47,6 +47,14 @@ function sumarPuntos(equipo, cantidad) {
 
 function sumarJuego(equipo, cantidad) {
     estado[equipo].juegos = Math.max(0, estado[equipo].juegos + cantidad);
+    
+    // Si se SUMA un juego, reseteamos los puntos de ambos equipos y las apuestas
+    if (cantidad > 0) {
+        estado.equipo1.puntos = 0;
+        estado.equipo2.puntos = 0;
+        estado.apuestas = { grande: 0, chica: 0, pares: 0, juego: 0 };
+    }
+    
     actualizarPantalla();
     if (cantidad > 0 && navigator.vibrate) {
         navigator.vibrate([100, 50, 100, 50, 200]);
@@ -65,7 +73,6 @@ function configurarEquipo(elementoId, equipo) {
     let yaResto = false;
     
     el.addEventListener('touchstart', (e) => {
-        // Ignorar si el toque viene de un botón
         if (e.target.tagName === 'BUTTON') return;
         
         const t = e.touches[0];
@@ -82,7 +89,6 @@ function configurarEquipo(elementoId, equipo) {
         const t = e.touches[0];
         const deltaY = t.clientY - inicioY;
         
-        // Deslizar hacia abajo → restar punto
         if (deltaY > 60 && !yaResto) {
             sumarPuntos(equipo, -1);
             yaResto = true;
@@ -99,7 +105,6 @@ function configurarEquipo(elementoId, equipo) {
         const deltaY = Math.abs(t.clientY - inicioY);
         const deltaX = Math.abs(t.clientX - inicioX);
         
-        // Toque rápido sin moverse → sumar punto
         if (tiempo < 300 && deltaY < 15 && deltaX < 15 && !yaResto) {
             if (e.target.tagName !== 'BUTTON') {
                 sumarPuntos(equipo, 1);
@@ -109,7 +114,7 @@ function configurarEquipo(elementoId, equipo) {
     }, { passive: true });
 }
 
-// === BOTONES DE LAS APUESTAS ===
+// === BOTONES DE LAS FLECHAS DE LAS APUESTAS ===
 function configurarApuestas() {
     document.querySelectorAll('.apuesta-btn').forEach(btn => {
         const tipo = btn.dataset.tipo;
@@ -121,7 +126,6 @@ function configurarApuestas() {
             e.stopPropagation();
             yaResetee = false;
             
-            // Pulsación larga → resetear esa apuesta
             timerLargo = setTimeout(() => {
                 estado.apuestas[tipo] = 0;
                 actualizarPantalla();
@@ -134,7 +138,6 @@ function configurarApuestas() {
             e.stopPropagation();
             if (timerLargo) clearTimeout(timerLargo);
             
-            // Si no fue pulsación larga, sumamos los puntos de esa apuesta al equipo
             if (!yaResetee) {
                 const puntosApuesta = estado.apuestas[tipo];
                 if (puntosApuesta > 0) {
@@ -152,17 +155,28 @@ function configurarApuestas() {
     });
 }
 
-// === TOQUE EN LA ZONA CENTRAL DE LA APUESTA (sumar a la apuesta) ===
+// === TOQUE EN EL CENTRO DEL MINI-MARCADOR (sumar y deslizar para restar) ===
 function configurarSumarApuestas() {
     document.querySelectorAll('.apuesta-info').forEach(el => {
         const tipo = el.parentElement.dataset.tipo;
         let timerLargo = null;
         let yaResetee = false;
+        let inicioY = 0;
+        let inicioX = 0;
+        let tiempoInicio = 0;
+        let yaResto = false;
         
         el.addEventListener('touchstart', (e) => {
             e.stopPropagation();
             yaResetee = false;
+            yaResto = false;
             
+            const t = e.touches[0];
+            inicioY = t.clientY;
+            inicioX = t.clientX;
+            tiempoInicio = Date.now();
+            
+            // Pulsación larga (600ms) → reset total
             timerLargo = setTimeout(() => {
                 estado.apuestas[tipo] = 0;
                 actualizarPantalla();
@@ -171,19 +185,45 @@ function configurarSumarApuestas() {
             }, 600);
         }, { passive: true });
         
+        el.addEventListener('touchmove', (e) => {
+            const t = e.touches[0];
+            const deltaY = t.clientY - inicioY;
+            const deltaXAbs = Math.abs(t.clientX - inicioX);
+            
+            // Si se mueve, cancela el timer de pulsación larga
+            if (Math.abs(deltaY) > 8 || deltaXAbs > 8) {
+                if (timerLargo) {
+                    clearTimeout(timerLargo);
+                    timerLargo = null;
+                }
+            }
+            
+            // Deslizar hacia abajo → restar 1 (solo una vez por gesto)
+            if (deltaY > 30 && !yaResto) {
+                if (estado.apuestas[tipo] > 0) {
+                    estado.apuestas[tipo] -= 1;
+                    actualizarPantalla();
+                    if (navigator.vibrate) navigator.vibrate(20);
+                }
+                yaResto = true;
+            }
+        }, { passive: true });
+        
         el.addEventListener('touchend', (e) => {
             e.stopPropagation();
             if (timerLargo) clearTimeout(timerLargo);
             
-            if (!yaResetee) {
+            const tiempo = Date.now() - tiempoInicio;
+            const t = e.changedTouches[0];
+            const deltaY = Math.abs(t.clientY - inicioY);
+            const deltaX = Math.abs(t.clientX - inicioX);
+            
+            // Toque corto sin movimiento → sumar 1
+            if (!yaResetee && !yaResto && tiempo < 400 && deltaY < 15 && deltaX < 15) {
                 estado.apuestas[tipo] += 1;
                 actualizarPantalla();
                 if (navigator.vibrate) navigator.vibrate(15);
             }
-        }, { passive: true });
-        
-        el.addEventListener('touchmove', () => {
-            if (timerLargo) clearTimeout(timerLargo);
         }, { passive: true });
     });
 }
