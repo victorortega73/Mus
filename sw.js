@@ -1,5 +1,5 @@
 // Service Worker para que la app funcione offline
-const CACHE_NAME = 'mus-v1';
+const CACHE_NAME = 'mus-v2';
 const ARCHIVOS = [
     './',
     './index.html',
@@ -10,7 +10,6 @@ const ARCHIVOS = [
     './icon-512.png'
 ];
 
-// Al instalar, guardamos todos los archivos en caché
 self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
@@ -22,7 +21,6 @@ self.addEventListener('install', (event) => {
     self.skipWaiting();
 });
 
-// Al activarse, borramos cachés antiguas
 self.addEventListener('activate', (event) => {
     event.waitUntil(
         caches.keys().then((nombres) => {
@@ -38,7 +36,6 @@ self.addEventListener('activate', (event) => {
     self.clients.claim();
 });
 
-// Cuando se pide un archivo, primero buscamos en caché
 self.addEventListener('fetch', (event) => {
     event.respondWith(
         caches.match(event.request).then((respuesta) => {

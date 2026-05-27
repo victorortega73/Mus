@@ -15,63 +15,73 @@
 <body>
     <div class="app">
         
-        <!-- EQUIPO 1 (arriba) -->
+        <!-- EQUIPO 1 (IZQUIERDA) -->
         <div class="equipo equipo-1" id="equipo1">
             <div class="nombre-equipo">NOSOTROS</div>
-            <div class="puntuacion">
-                <div class="amarrakos">
-                    <span id="amarrakos1">0</span>
-                    <span class="label">amarrakos</span>
-                </div>
-                <div class="piedras">
-                    <span id="piedras1">0</span>
-                    <span class="label">piedras</span>
-                </div>
+            <div class="puntos" id="puntos1">0</div>
+            <div class="label">puntos</div>
+            <div class="juegos-zona">
+                <button class="btn-juego-menos" data-equipo="equipo1">−</button>
+                <div class="juegos">Juegos: <span id="juegos1">0</span></div>
+                <button class="btn-juego-mas" data-equipo="equipo1">+</button>
             </div>
-            <div class="juegos">Juegos: <span id="juegos1">0</span></div>
         </div>
 
         <!-- ZONA CENTRAL: APUESTAS DE LA RONDA -->
         <div class="centro">
+            <button class="btn-reset" id="btn-reset">Reiniciar</button>
+            
             <div class="apuestas">
                 <div class="apuesta" data-tipo="grande">
-                    <div class="apuesta-label">GRANDE</div>
-                    <div class="apuesta-valor" id="apuesta-grande">0</div>
+                    <button class="apuesta-btn izq" data-tipo="grande" data-equipo="equipo1">◀</button>
+                    <div class="apuesta-info">
+                        <div class="apuesta-label">GRANDE</div>
+                        <div class="apuesta-valor" id="apuesta-grande">0</div>
+                    </div>
+                    <button class="apuesta-btn der" data-tipo="grande" data-equipo="equipo2">▶</button>
                 </div>
+                
                 <div class="apuesta" data-tipo="chica">
-                    <div class="apuesta-label">CHICA</div>
-                    <div class="apuesta-valor" id="apuesta-chica">0</div>
+                    <button class="apuesta-btn izq" data-tipo="chica" data-equipo="equipo1">◀</button>
+                    <div class="apuesta-info">
+                        <div class="apuesta-label">CHICA</div>
+                        <div class="apuesta-valor" id="apuesta-chica">0</div>
+                    </div>
+                    <button class="apuesta-btn der" data-tipo="chica" data-equipo="equipo2">▶</button>
                 </div>
+                
                 <div class="apuesta" data-tipo="pares">
-                    <div class="apuesta-label">PARES</div>
-                    <div class="apuesta-valor" id="apuesta-pares">0</div>
+                    <button class="apuesta-btn izq" data-tipo="pares" data-equipo="equipo1">◀</button>
+                    <div class="apuesta-info">
+                        <div class="apuesta-label">PARES</div>
+                        <div class="apuesta-valor" id="apuesta-pares">0</div>
+                    </div>
+                    <button class="apuesta-btn der" data-tipo="pares" data-equipo="equipo2">▶</button>
                 </div>
+                
                 <div class="apuesta" data-tipo="juego">
-                    <div class="apuesta-label">JUEGO</div>
-                    <div class="apuesta-valor" id="apuesta-juego">0</div>
+                    <button class="apuesta-btn izq" data-tipo="juego" data-equipo="equipo1">◀</button>
+                    <div class="apuesta-info">
+                        <div class="apuesta-label">JUEGO</div>
+                        <div class="apuesta-valor" id="apuesta-juego">0</div>
+                    </div>
+                    <button class="apuesta-btn der" data-tipo="juego" data-equipo="equipo2">▶</button>
                 </div>
             </div>
-            <div class="botones-centro">
-                <button class="btn-resolver" id="btn-resolver-1">▲ Sumar a Nosotros</button>
-                <button class="btn-reset" id="btn-reset">Reiniciar</button>
-                <button class="btn-resolver" id="btn-resolver-2">▼ Sumar a Ellos</button>
-            </div>
+            
+            <div class="ayuda">Toca + para sumar · Mantén para resetear</div>
         </div>
 
-        <!-- EQUIPO 2 (abajo) -->
+        <!-- EQUIPO 2 (DERECHA) -->
         <div class="equipo equipo-2" id="equipo2">
-            <div class="juegos">Juegos: <span id="juegos2">0</span></div>
-            <div class="puntuacion">
-                <div class="amarrakos">
-                    <span id="amarrakos2">0</span>
-                    <span class="label">amarrakos</span>
-                </div>
-                <div class="piedras">
-                    <span id="piedras2">0</span>
-                    <span class="label">piedras</span>
-                </div>
-            </div>
             <div class="nombre-equipo">ELLOS</div>
+            <div class="puntos" id="puntos2">0</div>
+            <div class="label">puntos</div>
+            <div class="juegos-zona">
+                <button class="btn-juego-menos" data-equipo="equipo2">−</button>
+                <div class="juegos">Juegos: <span id="juegos2">0</span></div>
+                <button class="btn-juego-mas" data-equipo="equipo2">+</button>
+            </div>
         </div>
 
     </div>
@@ -80,7 +90,7 @@
     <div class="modal" id="modal-reset">
         <div class="modal-contenido">
             <p>¿Qué quieres reiniciar?</p>
-            <button id="reset-piedras">Solo piedras y amarrakos</button>
+            <button id="reset-puntos">Solo puntos</button>
             <button id="reset-todo">Todo (también juegos)</button>
             <button id="reset-cancelar" class="cancelar">Cancelar</button>
         </div>
@@ -88,7 +98,6 @@
 
     <script src="app.js"></script>
     <script>
-        // Registrar el Service Worker para que funcione offline
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js')

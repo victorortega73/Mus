@@ -1,16 +1,13 @@
 // === ESTADO DE LA APLICACIÓN ===
 const estado = {
-    equipo1: { piedras: 0, amarrakos: 0, juegos: 0 },
-    equipo2: { piedras: 0, amarrakos: 0, juegos: 0 },
+    equipo1: { puntos: 0, juegos: 0 },
+    equipo2: { puntos: 0, juegos: 0 },
     apuestas: { grande: 0, chica: 0, pares: 0, juego: 0 }
 };
 
-const PIEDRAS_POR_AMARRAKO = 5;
-const AMARRAKOS_POR_JUEGO = 8; // 8 amarrakos x 5 piedras = 40 puntos
-
-// === CARGAR ESTADO GUARDADO ===
+// === CARGAR / GUARDAR ESTADO ===
 function cargarEstado() {
-    const guardado = localStorage.getItem('mus-estado');
+    const guardado = localStorage.getItem('mus-estado-v2');
     if (guardado) {
         try {
             const datos = JSON.parse(guardado);
@@ -23,17 +20,15 @@ function cargarEstado() {
 }
 
 function guardarEstado() {
-    localStorage.setItem('mus-estado', JSON.stringify(estado));
+    localStorage.setItem('mus-estado-v2', JSON.stringify(estado));
 }
 
 // === ACTUALIZAR PANTALLA ===
 function actualizarPantalla() {
-    document.getElementById('piedras1').textContent = estado.equipo1.piedras;
-    document.getElementById('amarrakos1').textContent = estado.equipo1.amarrakos;
+    document.getElementById('puntos1').textContent = estado.equipo1.puntos;
     document.getElementById('juegos1').textContent = estado.equipo1.juegos;
     
-    document.getElementById('piedras2').textContent = estado.equipo2.piedras;
-    document.getElementById('amarrakos2').textContent = estado.equipo2.amarrakos;
+    document.getElementById('puntos2').textContent = estado.equipo2.puntos;
     document.getElementById('juegos2').textContent = estado.equipo2.juegos;
     
     document.getElementById('apuesta-grande').textContent = estado.apuestas.grande;
@@ -45,42 +40,22 @@ function actualizarPantalla() {
 }
 
 // === LÓGICA DE PUNTOS ===
-function sumarPiedras(equipo, cantidad) {
-    const e = estado[equipo];
-    e.piedras += cantidad;
-    
-    // Convertir piedras a amarrakos
-    while (e.piedras >= PIEDRAS_POR_AMARRAKO) {
-        e.piedras -= PIEDRAS_POR_AMARRAKO;
-        e.amarrakos += 1;
-    }
-    
-    // Convertir amarrakos a juego
-    if (e.amarrakos >= AMARRAKOS_POR_JUEGO) {
-        e.amarrakos = 0;
-        e.piedras = 0;
-        e.juegos += 1;
-        // También reseteamos el otro equipo (nueva partida)
-        const otroEquipo = equipo === 'equipo1' ? 'equipo2' : 'equipo1';
-        estado[otroEquipo].piedras = 0;
-        estado[otroEquipo].amarrakos = 0;
-        // Vibración para celebrar
-        if (navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 200]);
-    }
-    
+function sumarPuntos(equipo, cantidad) {
+    estado[equipo].puntos = Math.max(0, estado[equipo].puntos + cantidad);
     actualizarPantalla();
 }
 
-function restarPiedras(equipo, cantidad) {
-    const e = estado[equipo];
-    let totalPiedras = e.amarrakos * PIEDRAS_POR_AMARRAKO + e.piedras;
-    totalPiedras = Math.max(0, totalPiedras - cantidad);
-    e.amarrakos = Math.floor(totalPiedras / PIEDRAS_POR_AMARRAKO);
-    e.piedras = totalPiedras % PIEDRAS_POR_AMARRAKO;
+function sumarJuego(equipo, cantidad) {
+    estado[equipo].juegos = Math.max(0, estado[equipo].juegos + cantidad);
     actualizarPantalla();
+    if (cantidad > 0 && navigator.vibrate) {
+        navigator.vibrate([100, 50, 100, 50, 200]);
+    } else if (navigator.vibrate) {
+        navigator.vibrate(30);
+    }
 }
 
-// === GESTIÓN DEL TOQUE / DESLIZAMIENTO EN EQUIPOS ===
+// === TOQUE EN LOS EQUIPOS (sumar puntos) ===
 function configurarEquipo(elementoId, equipo) {
     const el = document.getElementById(elementoId);
     let inicioY = 0;
@@ -90,8 +65,8 @@ function configurarEquipo(elementoId, equipo) {
     let yaResto = false;
     
     el.addEventListener('touchstart', (e) => {
-        // Ignorar si el toque viene de la zona central
-        if (e.target.closest('.centro')) return;
+        // Ignorar si el toque viene de un botón
+        if (e.target.tagName === 'BUTTON') return;
         
         const t = e.touches[0];
         inicioY = t.clientY;
@@ -105,83 +80,106 @@ function configurarEquipo(elementoId, equipo) {
         if (!arrastrando) return;
         
         const t = e.touches[0];
-        let deltaY = t.clientY - inicioY;
+        const deltaY = t.clientY - inicioY;
         
-        // Si el equipo está rotado (equipo 2), invertimos la lógica
-        if (equipo === 'equipo2') deltaY = -deltaY;
-        
-        // Si desliza hacia abajo más de 40px, mostrar indicador
-        if (deltaY > 40) {
-            el.classList.add('deslizando');
-            // Restar una piedra (solo una vez por gesto)
-            if (deltaY > 60 && !yaResto) {
-                restarPiedras(equipo, 1);
-                yaResto = true;
-                if (navigator.vibrate) navigator.vibrate(30);
-            }
-        } else {
-            el.classList.remove('deslizando');
+        // Deslizar hacia abajo → restar punto
+        if (deltaY > 60 && !yaResto) {
+            sumarPuntos(equipo, -1);
+            yaResto = true;
+            if (navigator.vibrate) navigator.vibrate(30);
         }
     }, { passive: true });
     
     el.addEventListener('touchend', (e) => {
         if (!arrastrando) return;
         arrastrando = false;
-        el.classList.remove('deslizando');
         
         const tiempo = Date.now() - tiempoInicio;
         const t = e.changedTouches[0];
         const deltaY = Math.abs(t.clientY - inicioY);
         const deltaX = Math.abs(t.clientX - inicioX);
         
-        // Si fue un toque rápido sin moverse → sumar
+        // Toque rápido sin moverse → sumar punto
         if (tiempo < 300 && deltaY < 15 && deltaX < 15 && !yaResto) {
-            // Verificar que no se toque la zona central
-            if (!e.target.closest('.centro') && !e.target.closest('.modal')) {
-                sumarPiedras(equipo, 1);
+            if (e.target.tagName !== 'BUTTON') {
+                sumarPuntos(equipo, 1);
                 if (navigator.vibrate) navigator.vibrate(20);
             }
         }
     }, { passive: true });
 }
 
-// === APUESTAS DEL CENTRO ===
+// === BOTONES DE LAS APUESTAS ===
 function configurarApuestas() {
-    document.querySelectorAll('.apuesta').forEach(el => {
-        const tipo = el.dataset.tipo;
+    document.querySelectorAll('.apuesta-btn').forEach(btn => {
+        const tipo = btn.dataset.tipo;
+        const equipo = btn.dataset.equipo;
+        let timerLargo = null;
+        let yaResetee = false;
         
-        let tiempoToque = 0;
+        btn.addEventListener('touchstart', (e) => {
+            e.stopPropagation();
+            yaResetee = false;
+            
+            // Pulsación larga → resetear esa apuesta
+            timerLargo = setTimeout(() => {
+                estado.apuestas[tipo] = 0;
+                actualizarPantalla();
+                if (navigator.vibrate) navigator.vibrate(60);
+                yaResetee = true;
+            }, 600);
+        }, { passive: true });
+        
+        btn.addEventListener('touchend', (e) => {
+            e.stopPropagation();
+            if (timerLargo) clearTimeout(timerLargo);
+            
+            // Si no fue pulsación larga, sumamos los puntos de esa apuesta al equipo
+            if (!yaResetee) {
+                const puntosApuesta = estado.apuestas[tipo];
+                if (puntosApuesta > 0) {
+                    sumarPuntos(equipo, puntosApuesta);
+                    estado.apuestas[tipo] = 0;
+                    actualizarPantalla();
+                    if (navigator.vibrate) navigator.vibrate(40);
+                }
+            }
+        }, { passive: true });
+        
+        btn.addEventListener('touchmove', () => {
+            if (timerLargo) clearTimeout(timerLargo);
+        }, { passive: true });
+    });
+}
+
+// === TOQUE EN LA ZONA CENTRAL DE LA APUESTA (sumar a la apuesta) ===
+function configurarSumarApuestas() {
+    document.querySelectorAll('.apuesta-info').forEach(el => {
+        const tipo = el.parentElement.dataset.tipo;
+        let timerLargo = null;
+        let yaResetee = false;
         
         el.addEventListener('touchstart', (e) => {
             e.stopPropagation();
-            tiempoToque = Date.now();
+            yaResetee = false;
+            
+            timerLargo = setTimeout(() => {
+                estado.apuestas[tipo] = 0;
+                actualizarPantalla();
+                if (navigator.vibrate) navigator.vibrate(60);
+                yaResetee = true;
+            }, 600);
         }, { passive: true });
         
         el.addEventListener('touchend', (e) => {
             e.stopPropagation();
-            const duracion = Date.now() - tiempoToque;
-            
-            if (duracion < 400) {
-                // Toque corto: sumar
-                estado.apuestas[tipo] += 1;
-                el.classList.add('activa');
-            }
-            actualizarPantalla();
-        }, { passive: true });
-        
-        // Pulsación larga: resetear ese marcador
-        let timerLargo = null;
-        el.addEventListener('touchstart', (e) => {
-            timerLargo = setTimeout(() => {
-                estado.apuestas[tipo] = 0;
-                el.classList.remove('activa');
-                actualizarPantalla();
-                if (navigator.vibrate) navigator.vibrate(50);
-            }, 600);
-        }, { passive: true });
-        
-        el.addEventListener('touchend', () => {
             if (timerLargo) clearTimeout(timerLargo);
+            
+            if (!yaResetee) {
+                estado.apuestas[tipo] += 1;
+                actualizarPantalla();
+                if (navigator.vibrate) navigator.vibrate(15);
+            }
         }, { passive: true });
         
         el.addEventListener('touchmove', () => {
@@ -190,28 +188,21 @@ function configurarApuestas() {
     });
 }
 
-// === BOTONES DE RESOLVER LA RONDA ===
-function totalApuestas() {
-    return estado.apuestas.grande + estado.apuestas.chica + 
-           estado.apuestas.pares + estado.apuestas.juego;
-}
-
-function resolverRonda(equipo) {
-    const total = totalApuestas();
-    if (total === 0) return;
+// === BOTONES DE JUEGOS ===
+function configurarBotonesJuego() {
+    document.querySelectorAll('.btn-juego-mas').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            sumarJuego(btn.dataset.equipo, 1);
+        });
+    });
     
-    sumarPiedras(equipo, total);
-    
-    // Resetear las apuestas
-    estado.apuestas.grande = 0;
-    estado.apuestas.chica = 0;
-    estado.apuestas.pares = 0;
-    estado.apuestas.juego = 0;
-    
-    document.querySelectorAll('.apuesta').forEach(el => el.classList.remove('activa'));
-    actualizarPantalla();
-    
-    if (navigator.vibrate) navigator.vibrate(40);
+    document.querySelectorAll('.btn-juego-menos').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            sumarJuego(btn.dataset.equipo, -1);
+        });
+    });
 }
 
 // === MODAL DE RESET ===
@@ -223,22 +214,18 @@ function ocultarModalReset() {
     document.getElementById('modal-reset').classList.remove('visible');
 }
 
-function resetearPiedras() {
-    estado.equipo1.piedras = 0;
-    estado.equipo1.amarrakos = 0;
-    estado.equipo2.piedras = 0;
-    estado.equipo2.amarrakos = 0;
+function resetearPuntos() {
+    estado.equipo1.puntos = 0;
+    estado.equipo2.puntos = 0;
     estado.apuestas = { grande: 0, chica: 0, pares: 0, juego: 0 };
-    document.querySelectorAll('.apuesta').forEach(el => el.classList.remove('activa'));
     actualizarPantalla();
     ocultarModalReset();
 }
 
 function resetearTodo() {
-    estado.equipo1 = { piedras: 0, amarrakos: 0, juegos: 0 };
-    estado.equipo2 = { piedras: 0, amarrakos: 0, juegos: 0 };
+    estado.equipo1 = { puntos: 0, juegos: 0 };
+    estado.equipo2 = { puntos: 0, juegos: 0 };
     estado.apuestas = { grande: 0, chica: 0, pares: 0, juego: 0 };
-    document.querySelectorAll('.apuesta').forEach(el => el.classList.remove('activa'));
     actualizarPantalla();
     ocultarModalReset();
 }
@@ -249,23 +236,15 @@ document.addEventListener('DOMContentLoaded', () => {
     configurarEquipo('equipo1', 'equipo1');
     configurarEquipo('equipo2', 'equipo2');
     configurarApuestas();
-    
-    document.getElementById('btn-resolver-1').addEventListener('click', (e) => {
-        e.stopPropagation();
-        resolverRonda('equipo1');
-    });
-    
-    document.getElementById('btn-resolver-2').addEventListener('click', (e) => {
-        e.stopPropagation();
-        resolverRonda('equipo2');
-    });
+    configurarSumarApuestas();
+    configurarBotonesJuego();
     
     document.getElementById('btn-reset').addEventListener('click', (e) => {
         e.stopPropagation();
         mostrarModalReset();
     });
     
-    document.getElementById('reset-piedras').addEventListener('click', resetearPiedras);
+    document.getElementById('reset-puntos').addEventListener('click', resetearPuntos);
     document.getElementById('reset-todo').addEventListener('click', resetearTodo);
     document.getElementById('reset-cancelar').addEventListener('click', ocultarModalReset);
     

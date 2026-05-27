@@ -18,12 +18,12 @@ html, body {
     color: white;
 }
 
-/* === LAYOUT PRINCIPAL === */
+/* === LAYOUT PRINCIPAL: HORIZONTAL === */
 .app {
     height: 100vh;
     height: 100dvh;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
 }
 
@@ -34,166 +34,178 @@ html, body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 20px;
+    padding: 15px;
     position: relative;
     touch-action: none;
     transition: background-color 0.15s;
+    min-width: 0;
 }
 
 .equipo-1 {
-    background: linear-gradient(180deg, #1e5f3f 0%, #0a3d2a 100%);
+    background: linear-gradient(135deg, #1e5f3f 0%, #0a3d2a 100%);
 }
 
 .equipo-2 {
-    background: linear-gradient(0deg, #1e5f3f 0%, #0a3d2a 100%);
+    background: linear-gradient(225deg, #1e5f3f 0%, #0a3d2a 100%);
 }
 
 .equipo.activo {
     background: #2d7a52;
 }
 
-.equipo-2 {
-    transform: rotate(180deg);
-}
-
 .nombre-equipo {
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 600;
     letter-spacing: 3px;
     opacity: 0.7;
-    margin-bottom: 5px;
+    margin-bottom: 8px;
 }
 
-.puntuacion {
-    display: flex;
-    align-items: baseline;
-    gap: 25px;
-    margin: 5px 0;
-}
-
-.amarrakos, .piedras {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.amarrakos span:first-child {
-    font-size: 80px;
+.puntos {
+    font-size: 100px;
     font-weight: 800;
     line-height: 1;
     color: #ffd700;
-    text-shadow: 0 2px 8px rgba(0,0,0,0.3);
-}
-
-.piedras span:first-child {
-    font-size: 80px;
-    font-weight: 800;
-    line-height: 1;
-    color: white;
-    text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    text-shadow: 0 2px 10px rgba(0,0,0,0.4);
+    margin: 0;
 }
 
 .label {
     font-size: 11px;
     opacity: 0.6;
-    margin-top: 4px;
-    letter-spacing: 1px;
+    margin-top: 6px;
+    letter-spacing: 1.5px;
+}
+
+.juegos-zona {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 18px;
+    background: rgba(0,0,0,0.3);
+    padding: 4px 6px;
+    border-radius: 20px;
+}
+
+.btn-juego-menos, .btn-juego-mas {
+    background: rgba(255,255,255,0.1);
+    color: white;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-juego-mas {
+    background: rgba(255, 215, 0, 0.2);
+    color: #ffd700;
+}
+
+.btn-juego-menos:active, .btn-juego-mas:active {
+    transform: scale(0.9);
 }
 
 .juegos {
-    font-size: 14px;
-    opacity: 0.75;
-    margin-top: 5px;
-    background: rgba(0,0,0,0.25);
-    padding: 4px 12px;
-    border-radius: 12px;
+    font-size: 13px;
+    opacity: 0.85;
+    padding: 0 4px;
+    white-space: nowrap;
 }
 
 /* === ZONA CENTRAL === */
 .centro {
+    width: 38%;
+    max-width: 280px;
+    min-width: 200px;
     background: #051f15;
     padding: 8px;
     display: flex;
     flex-direction: column;
     gap: 6px;
-    border-top: 2px solid rgba(255,255,255,0.1);
-    border-bottom: 2px solid rgba(255,255,255,0.1);
-}
-
-.apuestas {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 6px;
-}
-
-.apuesta {
-    background: #143d2a;
-    border-radius: 10px;
-    padding: 8px 4px;
-    text-align: center;
-    cursor: pointer;
-    transition: background 0.1s, transform 0.1s;
-    border: 2px solid transparent;
-}
-
-.apuesta:active {
-    transform: scale(0.95);
-    background: #1f5a3f;
-}
-
-.apuesta.activa {
-    border-color: #ffd700;
-    background: #1f5a3f;
-}
-
-.apuesta-label {
-    font-size: 10px;
-    letter-spacing: 1px;
-    opacity: 0.75;
-    margin-bottom: 2px;
-}
-
-.apuesta-valor {
-    font-size: 22px;
-    font-weight: 700;
-    color: #ffd700;
-}
-
-.botones-centro {
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    gap: 6px;
-}
-
-.btn-resolver {
-    background: #2d7a52;
-    color: white;
-    border: none;
-    padding: 10px 6px;
-    border-radius: 8px;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    letter-spacing: 0.5px;
-}
-
-.btn-resolver:active {
-    background: #3d9268;
+    border-left: 2px solid rgba(255,255,255,0.1);
+    border-right: 2px solid rgba(255,255,255,0.1);
 }
 
 .btn-reset {
     background: #5a1f1f;
     color: white;
     border: none;
-    padding: 10px 14px;
-    border-radius: 8px;
-    font-size: 11px;
+    padding: 6px;
+    border-radius: 6px;
+    font-size: 10px;
     font-weight: 600;
     cursor: pointer;
+    letter-spacing: 1px;
 }
 
 .btn-reset:active {
     background: #7a2f2f;
+}
+
+.apuestas {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex: 1;
+    justify-content: center;
+}
+
+.apuesta {
+    background: #143d2a;
+    border-radius: 8px;
+    padding: 4px;
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    align-items: center;
+    gap: 4px;
+}
+
+.apuesta-btn {
+    background: rgba(255,255,255,0.08);
+    color: white;
+    border: none;
+    padding: 8px 0;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.1s, transform 0.1s;
+}
+
+.apuesta-btn:active {
+    transform: scale(0.92);
+    background: #2d7a52;
+}
+
+.apuesta-info {
+    text-align: center;
+}
+
+.apuesta-label {
+    font-size: 9px;
+    letter-spacing: 1px;
+    opacity: 0.75;
+    margin-bottom: 1px;
+}
+
+.apuesta-valor {
+    font-size: 18px;
+    font-weight: 700;
+    color: #ffd700;
+    line-height: 1;
+}
+
+.ayuda {
+    font-size: 8px;
+    text-align: center;
+    opacity: 0.4;
+    letter-spacing: 0.5px;
 }
 
 /* === MODAL === */
@@ -244,19 +256,20 @@ html, body {
     background: rgba(255,255,255,0.15);
 }
 
-/* Indicador visual cuando deslizas */
-.equipo::after {
-    content: '↓ Desliza para restar';
-    position: absolute;
-    bottom: 8px;
-    left: 0;
-    right: 0;
-    text-align: center;
-    font-size: 10px;
-    opacity: 0;
-    transition: opacity 0.2s;
-}
-
-.equipo.deslizando::after {
-    opacity: 0.5;
+/* En modo retrato (móvil de pie), avisar que gire */
+@media (orientation: portrait) and (max-width: 600px) {
+    .app::before {
+        content: '📱 Gira el móvil en horizontal';
+        position: fixed;
+        inset: 0;
+        background: #0a3d2a;
+        color: #ffd700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        text-align: center;
+        z-index: 9999;
+        padding: 20px;
+    }
 }
