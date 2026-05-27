@@ -1,0 +1,262 @@
+/* === RESET BÁSICO === */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+html, body {
+    height: 100%;
+    overflow: hidden;
+    overscroll-behavior: none;
+    background: #0a3d2a;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    color: white;
+}
+
+/* === LAYOUT PRINCIPAL === */
+.app {
+    height: 100vh;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+/* === EQUIPOS (los dos marcadores grandes) === */
+.equipo {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    position: relative;
+    touch-action: none;
+    transition: background-color 0.15s;
+}
+
+.equipo-1 {
+    background: linear-gradient(180deg, #1e5f3f 0%, #0a3d2a 100%);
+}
+
+.equipo-2 {
+    background: linear-gradient(0deg, #1e5f3f 0%, #0a3d2a 100%);
+}
+
+.equipo.activo {
+    background: #2d7a52;
+}
+
+.equipo-2 {
+    transform: rotate(180deg);
+}
+
+.nombre-equipo {
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    opacity: 0.7;
+    margin-bottom: 5px;
+}
+
+.puntuacion {
+    display: flex;
+    align-items: baseline;
+    gap: 25px;
+    margin: 5px 0;
+}
+
+.amarrakos, .piedras {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.amarrakos span:first-child {
+    font-size: 80px;
+    font-weight: 800;
+    line-height: 1;
+    color: #ffd700;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.piedras span:first-child {
+    font-size: 80px;
+    font-weight: 800;
+    line-height: 1;
+    color: white;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.label {
+    font-size: 11px;
+    opacity: 0.6;
+    margin-top: 4px;
+    letter-spacing: 1px;
+}
+
+.juegos {
+    font-size: 14px;
+    opacity: 0.75;
+    margin-top: 5px;
+    background: rgba(0,0,0,0.25);
+    padding: 4px 12px;
+    border-radius: 12px;
+}
+
+/* === ZONA CENTRAL === */
+.centro {
+    background: #051f15;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    border-top: 2px solid rgba(255,255,255,0.1);
+    border-bottom: 2px solid rgba(255,255,255,0.1);
+}
+
+.apuestas {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+}
+
+.apuesta {
+    background: #143d2a;
+    border-radius: 10px;
+    padding: 8px 4px;
+    text-align: center;
+    cursor: pointer;
+    transition: background 0.1s, transform 0.1s;
+    border: 2px solid transparent;
+}
+
+.apuesta:active {
+    transform: scale(0.95);
+    background: #1f5a3f;
+}
+
+.apuesta.activa {
+    border-color: #ffd700;
+    background: #1f5a3f;
+}
+
+.apuesta-label {
+    font-size: 10px;
+    letter-spacing: 1px;
+    opacity: 0.75;
+    margin-bottom: 2px;
+}
+
+.apuesta-valor {
+    font-size: 22px;
+    font-weight: 700;
+    color: #ffd700;
+}
+
+.botones-centro {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 6px;
+}
+
+.btn-resolver {
+    background: #2d7a52;
+    color: white;
+    border: none;
+    padding: 10px 6px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+}
+
+.btn-resolver:active {
+    background: #3d9268;
+}
+
+.btn-reset {
+    background: #5a1f1f;
+    color: white;
+    border: none;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-reset:active {
+    background: #7a2f2f;
+}
+
+/* === MODAL === */
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+}
+
+.modal.visible {
+    display: flex;
+}
+
+.modal-contenido {
+    background: #1e5f3f;
+    border-radius: 16px;
+    padding: 24px;
+    width: 100%;
+    max-width: 320px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.modal-contenido p {
+    text-align: center;
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+
+.modal-contenido button {
+    background: #2d7a52;
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.modal-contenido button.cancelar {
+    background: rgba(255,255,255,0.15);
+}
+
+/* Indicador visual cuando deslizas */
+.equipo::after {
+    content: '↓ Desliza para restar';
+    position: absolute;
+    bottom: 8px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 10px;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.equipo.deslizando::after {
+    opacity: 0.5;
+}

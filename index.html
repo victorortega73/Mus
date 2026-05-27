@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Mus">
+    <meta name="theme-color" content="#0a3d2a">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="stylesheet" href="styles.css">
+    <title>Contador de Mus</title>
+</head>
+<body>
+    <div class="app">
+        
+        <!-- EQUIPO 1 (arriba) -->
+        <div class="equipo equipo-1" id="equipo1">
+            <div class="nombre-equipo">NOSOTROS</div>
+            <div class="puntuacion">
+                <div class="amarrakos">
+                    <span id="amarrakos1">0</span>
+                    <span class="label">amarrakos</span>
+                </div>
+                <div class="piedras">
+                    <span id="piedras1">0</span>
+                    <span class="label">piedras</span>
+                </div>
+            </div>
+            <div class="juegos">Juegos: <span id="juegos1">0</span></div>
+        </div>
+
+        <!-- ZONA CENTRAL: APUESTAS DE LA RONDA -->
+        <div class="centro">
+            <div class="apuestas">
+                <div class="apuesta" data-tipo="grande">
+                    <div class="apuesta-label">GRANDE</div>
+                    <div class="apuesta-valor" id="apuesta-grande">0</div>
+                </div>
+                <div class="apuesta" data-tipo="chica">
+                    <div class="apuesta-label">CHICA</div>
+                    <div class="apuesta-valor" id="apuesta-chica">0</div>
+                </div>
+                <div class="apuesta" data-tipo="pares">
+                    <div class="apuesta-label">PARES</div>
+                    <div class="apuesta-valor" id="apuesta-pares">0</div>
+                </div>
+                <div class="apuesta" data-tipo="juego">
+                    <div class="apuesta-label">JUEGO</div>
+                    <div class="apuesta-valor" id="apuesta-juego">0</div>
+                </div>
+            </div>
+            <div class="botones-centro">
+                <button class="btn-resolver" id="btn-resolver-1">▲ Sumar a Nosotros</button>
+                <button class="btn-reset" id="btn-reset">Reiniciar</button>
+                <button class="btn-resolver" id="btn-resolver-2">▼ Sumar a Ellos</button>
+            </div>
+        </div>
+
+        <!-- EQUIPO 2 (abajo) -->
+        <div class="equipo equipo-2" id="equipo2">
+            <div class="juegos">Juegos: <span id="juegos2">0</span></div>
+            <div class="puntuacion">
+                <div class="amarrakos">
+                    <span id="amarrakos2">0</span>
+                    <span class="label">amarrakos</span>
+                </div>
+                <div class="piedras">
+                    <span id="piedras2">0</span>
+                    <span class="label">piedras</span>
+                </div>
+            </div>
+            <div class="nombre-equipo">ELLOS</div>
+        </div>
+
+    </div>
+
+    <!-- Diálogo para confirmar reinicio -->
+    <div class="modal" id="modal-reset">
+        <div class="modal-contenido">
+            <p>¿Qué quieres reiniciar?</p>
+            <button id="reset-piedras">Solo piedras y amarrakos</button>
+            <button id="reset-todo">Todo (también juegos)</button>
+            <button id="reset-cancelar" class="cancelar">Cancelar</button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        // Registrar el Service Worker para que funcione offline
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => console.log('SW registrado'))
+                    .catch(err => console.log('Error SW:', err));
+            });
+        }
+    </script>
+</body>
+</html>
